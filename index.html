@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment & Neighbor | Nonenal Solution</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: '#db7536',
+                        'brand-dark': '#c6652e',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fdfdfd; }
+        ::-webkit-scrollbar-thumb { background: #db7536; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c6652e; }
+
+        [x-cloak] { display: none !important; }
+        
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-fade { animation: fadeIn 0.5s ease-out; }
+        .animate-up { animation: slideUp 0.6s ease-out; }
+    </style>
+</head>
+<body class="bg-white text-[#333333] font-sans selection:bg-brand selection:text-white"
+    x-data="{ 
+        lang: 'EN', 
+        modal: 'none',
+        mobileMenu: false,
+        translations: {
+            header: {
+                products: { EN: 'Products', JP: '製品情報' },
+                solution: { EN: 'Solution', JP: 'ソリューション' },
+                expertise: { EN: 'About Us', JP: '会社紹介' },
+                proof: { EN: 'Proof', JP: '実績' },
+                contact: { EN: 'Contact', JP: 'お問い合わせ' },
+            },
+            hero: {
+                slogan: { EN: 'The Solution for Elderly Body Odor', JP: '加齢臭の悩みを解決する専門ソリューション' },
+                description: { EN: 'We neutralize Nonenal the root cause of aging smells through expert innovation', JP: '加齢臭の原因物質であるノネナールを独自の技術で中和・除去します' },
+                ctaProducts: { EN: 'Our Products', JP: '製品一覧' },
+                ctaNonenal: { EN: 'What is Nonenal', JP: 'ノネナールとは？' },
+            },
+            story: {
+                title: { EN: 'About Us', JP: '会社紹介' },
+                mission: { EN: 'Expert Hygiene Solutions for the Golden Years.', JP: '科学的なイノベーションと慈愛に満ちたケアを通じて、すべての高齢者の尊厳を取り戻します。' },
+                buttons: {
+                    leadership: { EN: 'Global Leadership', JP: 'グローバルリーダーシップ' },
+                    compassion: { EN: 'Compassion', JP: '慈愛' },
+                    partnership: { EN: 'R&D Partnership', JP: '産学連携' },
+                    safety: { EN: 'Safety & Purity', JP: '安全と純度' }
+                }
+            },
+            products: {
+                title: { EN: 'Global Product Lineup', JP: '加齢臭対策製品ラインナップ' },
+                tag: { EN: 'Nonenal Care', JP: 'ノネナール除去' },
+                wipes: {
+                    name: { EN: 'Large Deodorizing Wipes', JP: '大判消臭ウェットティッシュ' },
+                    desc: { EN: 'The ultimate waterless shower wipe, instantly erasing nonenal aging odor for on-the-go freshness.', JP: '拭くだけで加齢臭を根本除去、水なしでシャワー直後の爽快さを再現する主力製品' }
+                },
+                spray: {
+                    name: { EN: 'Deodorizing Mist', JP: '消臭ミスト' },
+                    desc: { EN: 'Multi-purpose deodorizing mist. Safe for skin, effective for living spaces.', JP: 'リネンや居住空間向けの速攻性ボタニカルスプレー。' }
+                },
+                bodywash: {
+                    name: { EN: 'Senior Care Body Wash', JP: 'シニアケア ボディウォッシュ' },
+                    desc: { EN: 'Gentle vegan formula for sensitive skin care in nursing facilities.', JP: '介護施設の敏感な肌のための優しいヴィーガン処方。' }
+                }
+            },
+            proof: {
+                title: { EN: 'Proven Trust', JP: '証明された信頼' },
+                partners: { EN: '300+ Nursing Homes', JP: '300以上の介護施設に導入' },
+                certification: { EN: 'Patent Certified', JP: '特許取得済み' },
+                veganCert: { EN: 'Vegan Certificate', JP: 'ヴィーガン認証書' },
+                ingredients: { EN: 'Full Ingredients', JP: '全成分表示' }
+            },
+            contact: {
+                title: { EN: 'Buyer Inquiry', JP: 'バイヤー専用のお問い合わせ' },
+                name: { EN: 'Name', JP: 'お名前' },
+                region: { EN: 'Region / Country', JP: '地域 / 国名' },
+                email: { EN: 'Email Address', JP: 'メールアドレス' },
+                message: { EN: 'Inquiry Details', JP: 'お問い合わせ内容' },
+                submit: { EN: 'Send Inquiry', JP: 'お問い合わせを送信' },
+            },
+            footer: {
+                rights: { EN: '© 2026 Environment & Neighbor. All Rights Reserved.', JP: '© 2026 Environment & Neighbor. All Rights Reserved.' },
+                disclaimer: { EN: '*This product is a cosmetic, not a medical treatment.', JP: '※本製品は化粧品であり、医薬品ではありません。' }
+            }
+        },
+        t(path) {
+            let keys = path.split('.');
+            let val = this.translations;
+            for(let key of keys) {
+                val = val[key];
+            }
+            return val[this.lang];
+        }
+    }">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-brand rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-xl uppercase">EN</span>
+                </div>
+                <span class="font-bold text-xl tracking-tight hidden sm:block">Environment & Neighbor</span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#products" class="text-sm font-medium hover:text-brand transition-colors" x-text="t('header.products')"></a>
+                <a href="#solution" class="text-sm font-medium hover:text-brand transition-colors" x-text="t('header.solution')"></a>
+                <a href="#expertise" class="text-sm font-medium hover:text-brand transition-colors" x-text="t('header.expertise')"></a>
+                <a href="#proof" class="text-sm font-medium hover:text-brand transition-colors" x-text="t('header.proof')"></a>
+                <a href="#contact" class="px-5 py-2 bg-brand text-white rounded-full text-sm font-medium hover:bg-brand-dark transition-colors" x-text="t('header.contact')"></a>
+                
+                <div class="flex items-center gap-1 border-l pl-8 border-gray-200">
+                    <button @click="lang = 'EN'" :class="lang === 'EN' ? 'text-brand' : 'text-gray-400'" class="text-xs font-bold px-2 py-1 transition-colors">EN</button>
+                    <span class="text-gray-300 text-xs">|</span>
+                    <button @click="lang = 'JP'" :class="lang === 'JP' ? 'text-brand' : 'text-gray-400'" class="text-xs font-bold px-2 py-1 transition-colors">JP</button>
+                </div>
+            </nav>
+
+            <button class="md:hidden p-2" @click="mobileMenu = !mobileMenu">
+                <i x-show="!mobileMenu" data-lucide="menu"></i>
+                <i x-show="mobileMenu" data-lucide="x"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenu" x-cloak x-transition class="md:hidden bg-white border-b border-gray-100 p-6 flex flex-col gap-6 shadow-xl">
+            <a href="#products" @click="mobileMenu = false" class="text-lg font-medium" x-text="t('header.products')"></a>
+            <a href="#solution" @click="mobileMenu = false" class="text-lg font-medium" x-text="t('header.solution')"></a>
+            <a href="#expertise" @click="mobileMenu = false" class="text-lg font-medium" x-text="t('header.expertise')"></a>
+            <a href="#proof" @click="mobileMenu = false" class="text-lg font-medium" x-text="t('header.proof')"></a>
+            <a href="#contact" @click="mobileMenu = false" class="text-lg font-medium text-brand" x-text="t('header.contact')"></a>
+            <div class="flex gap-4 pt-4 border-t">
+                <button @click="lang = 'EN'; mobileMenu = false" :class="lang === 'EN' ? 'font-bold text-brand' : ''">English</button>
+                <button @click="lang = 'JP'; mobileMenu = false" :class="lang === 'JP' ? 'font-bold text-brand' : ''">日本語</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative pt-32 pb-12 md:pt-48 md:pb-16 min-h-[85vh] flex flex-col justify-center overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center mb-12">
+                <div class="animate-up">
+                    <span class="inline-block px-4 py-1.5 border border-brand text-brand text-xs font-bold tracking-widest uppercase rounded-full mb-6">Expert Led Innovation</span>
+                    <h1 class="text-5xl md:text-7xl font-bold leading-[1.1] mb-8" x-text="t('hero.slogan')"></h1>
+                    <p class="text-lg text-gray-500 mb-10 max-w-lg leading-relaxed" x-text="t('hero.description')"></p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#products" class="px-8 py-4 bg-brand text-white rounded-full font-bold flex items-center gap-2 hover:bg-brand-dark transition-all shadow-lg shadow-orange-100">
+                            <span x-text="t('hero.ctaProducts')"></span>
+                            <i data-lucide="chevron-right" width="18"></i>
+                        </a>
+                        <a href="#solution" class="px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-full font-bold flex items-center gap-2 hover:border-brand hover:text-brand transition-all">
+                            <span x-text="t('hero.ctaNonenal')"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="relative animate-fade delay-200">
+                    <div class="rounded-[40px] overflow-hidden shadow-2xl relative z-10 bg-white">
+                        <img src="https://www.enbcs.kr/theme/enbcs/img/business/new_eq_6.jpg" alt="Facility" class="w-full h-auto cursor-default pointer-events-none">
+                        <div x-show="lang === 'JP'" class="absolute inset-0 bg-black/5 flex items-end p-8">
+                            <span class="bg-white/95 backdrop-blur px-5 py-2.5 rounded-2xl text-xs font-black shadow-xl tracking-tighter border border-orange-50">加齢臭(かれいしゅう) 対策専門</span>
+                        </div>
+                    </div>
+                    <div class="absolute -top-12 -right-12 w-64 h-64 bg-orange-100/50 rounded-full -z-10 blur-[100px] opacity-40"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="py-24 -mt-20 relative z-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-20 animate-up">
+                    <h2 class="text-sm font-bold text-brand uppercase tracking-[0.3em] mb-4">Professional Selection</h2>
+                    <h3 class="text-5xl font-bold tracking-tight" x-text="t('products.title')"></h3>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-10">
+                    <!-- Product 1: Wipes -->
+                    <div class="group bg-white rounded-[40px] overflow-hidden border border-gray-100 hover:border-orange-200 transition-all shadow-xl hover:shadow-2xl">
+                        <div class="aspect-auto overflow-hidden relative bg-white">
+                            <img src="https://www.enbcs.kr/theme/enbcs/img/business/new_eq_2.jpg" class="w-full h-auto">
+                            <div class="absolute top-6 left-6 flex flex-col gap-2">
+                                <div class="bg-white/90 backdrop-blur text-brand text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm" x-text="t('products.tag')"></div>
+                                <div class="bg-brand text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm" x-text="lang === 'EN' ? 'Export-Spec' : '輸出仕様'"></div>
+                            </div>
+                        </div>
+                        <div class="p-10">
+                            <div class="flex items-center gap-2 text-gray-400 mb-6">
+                                <i data-lucide="package" width="24"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Premium Quality</span>
+                            </div>
+                            <h4 class="text-2xl font-bold mb-4" x-text="t('products.wipes.name')"></h4>
+                            <p class="text-gray-500 text-base leading-relaxed line-clamp-3 mb-8" x-text="t('products.wipes.desc')"></p>
+                            <a href="#resources" class="flex items-center justify-center gap-2 w-full py-4 bg-brand text-white rounded-2xl text-sm font-bold hover:bg-brand-dark transition-all shadow-lg shadow-orange-100">
+                                <i data-lucide="info" width="18"></i>
+                                <span x-text="lang === 'EN' ? 'Download Product Catalog' : '製品カタログをダウンロード'"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Product 2: Spray -->
+                    <div class="group bg-white rounded-[40px] overflow-hidden border border-gray-100 hover:border-orange-200 transition-all shadow-xl hover:shadow-2xl">
+                        <div class="aspect-auto bg-white overflow-hidden relative">
+                            <img src="https://postfiles.pstatic.net/MjAyNjA1MTBfMTg5/MDAxNzc4NDI0MzM2MTQ1.kzVufrI2_fqphlqTkteOUB8S9emSGGKEuO2_59vPYTQg.6sEIVdKRDcgUcZO_nRQR1-mqjZ15mx1h0vPvSLm_HqYg.PNG/127.png?type=w966" class="w-full h-auto">
+                            <div class="absolute top-6 left-6">
+                                <div class="bg-white/90 backdrop-blur text-brand text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm" x-text="t('products.tag')"></div>
+                            </div>
+                        </div>
+                        <div class="p-10">
+                            <div class="flex items-center gap-2 text-gray-400 mb-6">
+                                <i data-lucide="wind" width="24"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Premium Quality</span>
+                            </div>
+                            <h4 class="text-2xl font-bold mb-4" x-text="t('products.spray.name')"></h4>
+                            <p class="text-gray-500 text-base leading-relaxed line-clamp-3 mb-8" x-text="t('products.spray.desc')"></p>
+                        </div>
+                    </div>
+
+                    <!-- Product 3: Body Wash -->
+                    <div class="group bg-white rounded-[40px] overflow-hidden border border-gray-100 hover:border-orange-200 transition-all shadow-xl hover:shadow-2xl">
+                        <div class="aspect-auto bg-white overflow-hidden relative">
+                            <img src="https://postfiles.pstatic.net/MjAyNjA1MTBfMTUx/MDAxNzc4NDI0MzM2MTM3.Pf3C57z4S9RbH8tP6BnhmHQ5DA9ZnEtXG_1-IHLBEmUg.4aKKKaiZi9CsgV7b8JU9SFq_Nu_O69O8PNxG1i7YhFkg.PNG/126.png?type=w966" class="w-full h-auto">
+                            <div class="absolute top-6 left-6">
+                                <div class="bg-white/90 backdrop-blur text-brand text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm" x-text="t('products.tag')"></div>
+                            </div>
+                        </div>
+                        <div class="p-10">
+                            <div class="flex items-center gap-2 text-gray-400 mb-6">
+                                <i data-lucide="droplets" width="24"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Premium Quality</span>
+                            </div>
+                            <h4 class="text-2xl font-bold mb-4" x-text="t('products.bodywash.name')"></h4>
+                            <p class="text-gray-500 text-base leading-relaxed line-clamp-3 mb-8" x-text="t('products.bodywash.desc')"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Section Carousel -->
+        <section id="solution" class="py-24 bg-gray-50 overflow-hidden" 
+            x-data="{ 
+                current: 0,
+                cards: [
+                    { icon: 'info', key: 'card1' },
+                    { icon: 'heart', key: 'card2' },
+                    { icon: 'flask-conical', key: 'card3' },
+                    { icon: 'shield-check', key: 'card4' },
+                    { icon: 'zap', key: 'card5' }
+                ]
+            }">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 text-center md:text-left">
+                    <div>
+                        <h2 class="text-sm font-bold text-brand uppercase tracking-[0.3em] mb-4">The Science of Nonenal</h2>
+                        <h3 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Science Based Innovation</h3>
+                    </div>
+                    <div class="flex gap-4 justify-center">
+                        <button @click="current = (current - 1 + cards.length) % cards.length" class="p-4 rounded-full border border-gray-200 hover:border-brand hover:text-brand transition-all bg-white shadow-sm active:scale-95">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+                        <button @click="current = (current + 1) % cards.length" class="p-4 rounded-full border border-gray-200 hover:border-brand hover:text-brand transition-all bg-white shadow-sm active:scale-95">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative min-h-[500px]">
+                    <template x-for="(card, index) in cards" :key="index">
+                        <div x-show="current === index" x-transition.opacity.duration.400ms class="absolute inset-0 flex flex-col md:flex-row items-center gap-8 md:gap-16 p-8 md:p-20 rounded-[48px] border-b-8 border-brand bg-white shadow-2xl">
+                            <div class="w-24 h-24 rounded-[32px] bg-orange-50 flex items-center justify-center shrink-0">
+                                <i :data-lucide="card.icon" class="text-brand" width="40"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="text-brand text-xs font-black uppercase tracking-widest mb-2 block" x-text="translations.solution[card.key].main[lang]"></span>
+                                <h4 class="text-2xl md:text-4xl font-bold mb-6 text-gray-900 leading-tight" x-text="translations.solution[card.key].title[lang]"></h4>
+                                <p class="text-lg md:text-xl text-gray-500 leading-relaxed max-w-3xl" x-html="translations.solution[card.key].desc[lang].replace(/\*\*(.*?)\*\*/g, '<strong class=\'font-bold text-brand\'>$1</strong>')"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expertise Section -->
+        <section id="expertise" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-20 items-center mb-16">
+                    <div class="relative">
+                        <div class="absolute -inset-4 bg-orange-100/50 rounded-[48px] -rotate-3"></div>
+                        <img src="https://postfiles.pstatic.net/MjAyNjA1MTBfMjgx/MDAxNzc4NDIzOTc2MTE2.1uXxmpuBRTBgv1_TGkNZFNe0GVPzqXYFgTJGX-8Ozvwg.CaCX-JZI0VjtEIo9GzuUOgDljT6wQX5zoxz9B7ZmPQsg.PNG/temp_1778422727631.-697186235.png?type=w966" class="relative w-full h-auto rounded-[40px] shadow-2xl z-10">
+                    </div>
+
+                    <div>
+                        <h2 class="text-sm font-bold text-brand uppercase tracking-[0.4em] mb-6" x-text="t('story.title')"></h2>
+                        <h3 class="text-4xl md:text-5xl font-bold text-gray-900 leading-[1.2] mb-8" x-text="t('story.mission')"></h3>
+                        
+                        <!-- Actions -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <a href="https://aisi.or.kr/" target="_blank" class="p-6 bg-gray-50 rounded-[32px] flex flex-col gap-4 border border-transparent hover:border-brand/30 hover:bg-orange-50/50 transition-all group">
+                                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="globe"></i></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-gray-900" x-text="t('story.buttons.leadership')"></span>
+                                    <i data-lucide="external-link" size="16"></i>
+                                </div>
+                            </a>
+
+                            <button @click="modal = 'compassion'" class="p-6 bg-gray-50 rounded-[32px] text-left border border-transparent hover:border-brand/30 hover:bg-orange-50/50 transition-all group">
+                                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand shadow-sm mb-4 group-hover:scale-110 transition-transform"><i data-lucide="heart"></i></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-gray-900" x-text="t('story.buttons.compassion')"></span>
+                                    <i data-lucide="chevron-right" size="16" class="text-brand"></i>
+                                </div>
+                            </button>
+
+                            <button @click="modal = 'partnership'" class="p-6 bg-gray-50 rounded-[32px] text-left border border-transparent hover:border-brand/30 hover:bg-orange-50/50 transition-all group">
+                                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand shadow-sm mb-4 group-hover:scale-110 transition-transform"><i data-lucide="flask-conical"></i></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-gray-900" x-text="t('story.buttons.partnership')"></span>
+                                    <i data-lucide="chevron-right" size="16" class="text-brand"></i>
+                                </div>
+                            </button>
+
+                            <button @click="modal = 'safety'" class="p-6 bg-gray-50 rounded-[32px] text-left border border-transparent hover:border-brand/30 hover:bg-orange-50/50 transition-all group">
+                                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand shadow-sm mb-4 group-hover:scale-110 transition-transform"><i data-lucide="shield-check"></i></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-gray-900" x-text="t('story.buttons.safety')"></span>
+                                    <i data-lucide="chevron-right" size="16" class="text-brand"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proof Section -->
+        <section id="proof" class="py-24 bg-white border-y border-gray-100">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-sm font-bold text-brand uppercase tracking-widest mb-4">Market Validation</h2>
+                    <h3 class="text-4xl font-bold" x-text="t('proof.title')"></h3>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="p-8 rounded-3xl bg-gray-50 border border-transparent hover:border-gray-200 transition-all">
+                        <div class="text-brand mb-6"><i data-lucide="users"></i></div>
+                        <h4 class="text-xl font-bold mb-3" x-text="t('proof.partners')"></h4>
+                        <p class="text-sm text-gray-500" x-text="lang === 'EN' ? 'Reliable supply chain.' : '安定したサプライチェーン。'"></p>
+                    </div>
+                    <div class="p-8 rounded-3xl bg-gray-50 border border-transparent hover:border-gray-200 transition-all">
+                        <div class="text-brand mb-6"><i data-lucide="award"></i></div>
+                        <h4 class="text-xl font-bold mb-3" x-text="t('proof.certification')"></h4>
+                        <button @click="modal = 'patent'" class="text-xs font-bold text-brand hover:underline">View Patent</button>
+                    </div>
+                    <div class="p-8 rounded-3xl bg-gray-50 border border-transparent hover:border-gray-200 transition-all">
+                        <div class="text-brand mb-6"><i data-lucide="search"></i></div>
+                        <h4 class="text-xl font-bold mb-3" x-text="lang === 'EN' ? 'Vegan Certified' : 'ヴィーガン認証'"></h4>
+                        <div class="flex flex-col gap-2">
+                            <button @click="modal = 'vegan'" class="text-xs font-bold text-green-600 hover:underline">Vegan Certificate</button>
+                            <button @click="modal = 'ingredients'" class="text-xs font-bold text-blue-600 hover:underline">Full Ingredients</button>
+                        </div>
+                    </div>
+                    <div class="p-8 rounded-3xl bg-gray-50 border border-transparent hover:border-gray-200 transition-all">
+                        <div class="text-brand mb-6"><i data-lucide="check-circle-2"></i></div>
+                        <h4 class="text-xl font-bold mb-3" x-text="lang === 'EN' ? 'Social Worker Design' : '社会福祉士による設計'"></h4>
+                        <p class="text-sm text-gray-500" x-text="lang === 'EN' ? 'Practical insights.' : '実践的な視点。'"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <h2 class="text-sm font-bold text-brand uppercase tracking-widest mb-4">Resources</h2>
+                <h3 class="text-4xl font-bold mb-6" x-text="lang === 'EN' ? 'Download Product Catalog' : '製品カタログをダウンロード'"></h3>
+                
+                <div class="relative w-full max-w-5xl mx-auto bg-gray-50 rounded-[32px] overflow-hidden border border-gray-100 shadow-2xl mb-10 min-h-[850px]">
+                    <iframe :src="lang === 'EN' ? 'https://drive.google.com/file/d/1s5d2EAn9nSGp-HrWWpmpGJ9g5iKcXsOP/preview' : 'https://drive.google.com/file/d/1fdekiVX721lWbffBsD7MtkMMo6HKs9J8/preview'" class="w-full h-[850px]" allow="autoplay"></iframe>
+                </div>
+                
+                <a :href="lang === 'EN' ? 'https://drive.google.com/uc?export=download&id=1s5d2EAn9nSGp-HrWWpmpGJ9g5iKcXsOP' : 'https://drive.google.com/uc?export=download&id=1fdekiVX721lWbffBsD7MtkMMo6HKs9J8'" class="inline-flex items-center gap-3 px-10 py-5 bg-brand text-white rounded-full font-bold shadow-lg shadow-orange-200 hover:bg-brand-dark transition-all text-lg group">
+                    <i data-lucide="download"></i>
+                    <span x-text="lang === 'EN' ? 'Download PDF' : 'PDFをダウンロード'"></span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="bg-[#333] rounded-[40px] overflow-hidden flex flex-col lg:flex-row">
+                    <div class="p-12 lg:p-16 flex-1 text-white">
+                        <h2 class="text-sm font-bold text-brand uppercase tracking-widest mb-4">Get in Touch</h2>
+                        <h3 class="text-4xl font-bold mb-8" x-text="t('contact.title')"></h3>
+                        
+                        <form action="https://formspree.io/f/xojrkyvy" method="POST" class="space-y-6">
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2" x-text="t('contact.name')"></label>
+                                    <input name="name" type="text" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2" x-text="t('contact.region')"></label>
+                                    <input name="region" type="text" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand transition-colors">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2" x-text="t('contact.email')"></label>
+                                <input name="email" type="email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2" x-text="t('contact.message')"></label>
+                                <textarea name="message" rows="4" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand transition-colors resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-5 bg-brand text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-brand-dark transition-all transform hover:scale-[1.02]">
+                                <span x-text="t('contact.submit')"></span>
+                                <i data-lucide="send" width="18"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-[#2a2a2a] p-12 lg:p-16 lg:w-1/3 text-white border-l border-white/5">
+                        <h4 class="font-bold text-xl mb-10" x-text="lang === 'EN' ? 'Global HQ' : 'グローバル本社'"></h4>
+                        <div class="space-y-10">
+                            <div class="flex gap-6">
+                                <div class="w-10 h-10 flex-shrink-0 bg-white/5 rounded-xl flex items-center justify-center text-brand"><i data-lucide="map-pin"></i></div>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Address</p>
+                                    <p class="text-sm">Rm 314-315, Hanyang Univ. ERICA BI, 55 Hanyangdaehak-ro, Ansan, Korea</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-6">
+                                <div class="w-10 h-10 flex-shrink-0 bg-white/5 rounded-xl flex items-center justify-center text-brand"><i data-lucide="mail"></i></div>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Inquiry</p>
+                                    <p class="text-sm">sales@en-derm.kr</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand rounded-full flex items-center justify-center text-white font-bold text-xs">EN</div>
+                <p class="text-sm font-bold tracking-tight">Environment & Neighbor</p>
+            </div>
+            <div class="flex flex-col items-center md:items-end">
+                <p class="text-xs text-gray-400 mb-2" x-text="t('footer.rights')"></p>
+                <p class="text-[10px] text-gray-300 italic" x-text="t('footer.disclaimer')"></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Universal Modal Wrapper -->
+    <div x-show="modal !== 'none'" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" @click="modal = 'none'" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"></div>
+        
+        <div class="relative bg-white rounded-[40px] shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto z-10 p-4 md:p-8" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+            <div class="flex justify-between items-center mb-8 px-4">
+                <h4 class="text-2xl font-bold text-gray-900" x-text="modal.charAt(0).toUpperCase() + modal.slice(1)"></h4>
+                <button @click="modal = 'none'" class="p-3 bg-gray-100 hover:bg-orange-100 text-gray-500 hover:text-brand rounded-full transition-all">
+                    <i data-lucide="x" size="24"></i>
+                </button>
+            </div>
+            
+            <div class="p-2 md:p-4">
+                <!-- Compassion Modal Content -->
+                <div x-show="modal === 'compassion'" class="space-y-6">
+                    <p class="text-sm text-gray-500 mb-4">Sharing hygiene products with local senior communities and veterans.</p>
+                    <img src="https://www.enbcs.kr/data/editor/2512/thumb-2183f31b64688f4a9da513777bfc237f_1767059767_043_860x1147.jpg" class="w-full rounded-3xl h-auto">
+                </div>
+
+                <!-- Partnership Modal Content -->
+                <div x-show="modal === 'partnership'" class="space-y-8">
+                    <div class="bg-gray-50 p-6 md:p-10 rounded-[32px] flex flex-col gap-8">
+                        <h5 class="text-2xl font-bold">Hanyang University ERICA Campus R&D Center</h5>
+                        <p class="text-gray-600">Rm 314-315, Business Incubation Center, 55 Hanyangdaehak-ro, Ansan, Korea</p>
+                        <div class="aspect-video w-full rounded-2xl overflow-hidden shadow-lg border border-white">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1587.2183!2d126.8368!3d37.3005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b6f68c7e9f3b5%3A0xe1c0c80b5ed3a465!2z7ZWc7JaR64yA7ZWZ6rWQIEVSSUNB7LqY7Y287IqkIOywvemodulerOqyqOq0gA!5e0!3m2!1sko!2skr!4v1715320000000!5m2!1sko!2skr" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Modal Content -->
+                <div x-show="modal === 'safety'" class="space-y-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://www.enbcs.kr/theme/enbcs/img/business/ts1.jpg" class="w-full rounded-2xl">
+                        <img src="https://www.enbcs.kr/theme/enbcs/img/business/new_eq_6.jpg" class="w-full rounded-2xl">
+                    </div>
+                    <p class="text-sm text-gray-600">Automated manufacturing facility complying with strict hygiene standards and 12-step water purification system.</p>
+                </div>
+
+                <!-- Patent Modal -->
+                <div x-show="modal === 'patent'" class="w-full h-[700px]">
+                    <iframe src="https://drive.google.com/file/d/1KW_lUp7R_O6r-ZeN34L5v4ALWZo4x5Y7/preview" width="100%" height="100%" frameborder="0"></iframe>
+                </div>
+
+                <!-- Vegan Modal -->
+                <div x-show="modal === 'vegan'" class="w-full h-[700px]">
+                    <iframe src="https://drive.google.com/file/d/1nOFeBdmb9zE0QFJzrq2-eoneqKcy8wrs/preview" width="100%" height="100%" frameborder="0"></iframe>
+                </div>
+
+                <!-- Ingredients Modal -->
+                <div x-show="modal === 'ingredients'" class="space-y-6">
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                        <h6 class="font-bold text-blue-800 mb-2">Base & Technology</h6>
+                        <p class="text-sm text-blue-600">Water, Butylene Glycol, Hydroxyacetophenone, Sodium Bicarbonate, Laurylpyridinium Chloride, Disodium EDTA</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-2xl border border-green-100">
+                        <h6 class="font-bold text-green-800 mb-2">Natural Extracts</h6>
+                        <p class="text-sm text-green-600">Chamomile Flower, White Willow Bark, Aloe Vera Leaf, Propolis, Grapefruit Seed, Lycium Chinense Root</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+        
+        // Ensure Lucide icons re-render on language or modal changes if needed
+        // but since we're using static 'data-lucide' tags, they usually only need one call.
+    </script>
+</body>
+</html>
